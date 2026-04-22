@@ -273,6 +273,17 @@
       line-height: 1.5;
     }
 
+    .form-error {
+      display: none;
+      margin-top: 12px;
+      color: #E86A1A;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .form-error.show { display: block; }
+
     .success-msg { display: none; text-align: center; padding: 40px 10px; }
     .success-msg.show { display: block; }
 
@@ -347,45 +358,47 @@
     </div>
 
     <div class="hero-right">
-      <div id="form-wrap">
+      <form id="quote-form" action="mail/send-quote.php" method="post" novalidate>
         <div class="form-label-top">Get a free quote</div>
         <p class="form-title">Tell us about your operation</p>
         <p class="form-sub">Fill this out and our team will reach out within 24 hours with a tailored proposal.</p>
 
+        <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="display:none">
+
         <div class="form-row">
           <div class="form-group">
             <label>First name</label>
-            <input type="text" placeholder="John" id="fname">
+            <input type="text" placeholder="John" id="fname" name="fname" required>
           </div>
           <div class="form-group">
             <label>Last name</label>
-            <input type="text" placeholder="Smith" id="lname">
+            <input type="text" placeholder="Smith" id="lname" name="lname" required>
           </div>
         </div>
 
         <div class="form-group">
           <label>Work email</label>
-          <input type="email" placeholder="john@company.com" id="email">
+          <input type="email" placeholder="john@company.com" id="email" name="email" required>
         </div>
 
         <div class="form-group">
           <label>Phone number</label>
-          <input type="tel" placeholder="+1 (555) 000-0000" id="phone">
+          <input type="tel" placeholder="+1 (555) 000-0000" id="phone" name="phone" required>
         </div>
 
         <div class="form-group">
           <label>Company</label>
-          <input type="text" placeholder="Company name" id="company">
+          <input type="text" placeholder="Company name" id="company" name="company" required>
         </div>
 
         <div class="form-group">
           <label>Job title</label>
-          <input type="text" placeholder="Plant Manager" id="jobtitle">
+          <input type="text" placeholder="Plant Manager" id="jobtitle" name="jobtitle" required>
         </div>
 
         <div class="form-group">
           <label>Industry</label>
-          <select id="industry">
+          <select id="industry" name="industry" required>
             <option value="" disabled selected>Select your industry</option>
             <option>Cement and Aggregate</option>
             <option>Mining</option>
@@ -399,9 +412,10 @@
           </select>
         </div>
 
-        <button class="submit-btn" onclick="submitForm()">Request my free quote</button>
+        <button class="submit-btn" type="submit" id="submit-btn">Request my free quote</button>
         <p class="disclaimer">No spam. Your information is only used to prepare your quote and contact you directly.</p>
-      </div>
+        <p class="form-error" id="form-error">We could not send your request. Please try again.</p>
+      </form>
 
       <div class="success-msg" id="success">
         <div class="success-icon">&#10003;</div>
@@ -413,12 +427,17 @@
   </div>
 
   <script>
-    function submitForm() {
+    const quoteForm = document.getElementById('quote-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorMsg = document.getElementById('form-error');
+
+    quoteForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
       const fields = ['fname', 'lname', 'email', 'phone', 'company', 'jobtitle', 'industry'];
       let valid = true;
       fields.forEach(function(id) {
         const el = document.getElementById(id);
-        if (!el.value) {
+        if (!el.value || (el.type === 'email' && !el.validity.valid)) {
           el.style.borderColor = '#E86A1A';
           valid = false;
         } else {
@@ -426,9 +445,29 @@
         }
       });
       if (!valid) return;
-      document.getElementById('form-wrap').style.display = 'none';
-      document.getElementById('success').classList.add('show');
-    }
+      errorMsg.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch(quoteForm.action, {
+          method: 'POST',
+          body: new FormData(quoteForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || 'Send failed');
+        }
+        quoteForm.style.display = 'none';
+        document.getElementById('success').classList.add('show');
+      } catch (error) {
+        errorMsg.textContent = 'We could not send your request. Please try again.';
+        errorMsg.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request my free quote';
+      }
+    });
   </script>
 
 </body>
