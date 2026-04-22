@@ -33,6 +33,7 @@
       grid-template-columns: 1fr 420px;
       min-height: calc(100vh - 36px);
       align-items: stretch;
+      min-width: 0;
     }
 
     .hero-left {
@@ -42,6 +43,7 @@
       justify-content: center;
       border-right: 1px solid #1e2530;
       position: relative;
+      min-width: 0;
     }
 
     .hero-left::before {
@@ -55,6 +57,14 @@
         rgba(232,106,26,0.04) 49px
       );
       pointer-events: none;
+    }
+
+    .hero-logo {
+      display: block;
+      width: clamp(112px, 11vw, 150px);
+      height: auto;
+      margin-bottom: 22px;
+      mix-blend-mode: screen;
     }
 
     .section-label {
@@ -90,6 +100,8 @@
     }
 
     .headline span { color: #E86A1A; display: block; }
+
+    .mobile-break { display: none; }
 
     .subhead {
       font-size: 15px;
@@ -150,6 +162,7 @@
       flex-direction: column;
       justify-content: center;
       border-left: 1px solid #1e2530;
+      min-width: 0;
     }
 
     .form-label-top {
@@ -289,9 +302,13 @@
     @media (max-width: 780px) {
       .hero { grid-template-columns: 1fr; }
       .hero-left { padding: 40px 24px; border-right: none; border-bottom: 1px solid #1e2530; }
+      .hero-logo { width: 118px; margin-bottom: 20px; }
       .hero-right { padding: 40px 24px; }
       .form-row { grid-template-columns: 1fr; }
       .headline { font-size: 52px; }
+      .mobile-break { display: block; }
+      .brand-footer { align-items: flex-start; }
+      .brand-footer-text { line-height: 1.5; overflow-wrap: anywhere; }
     }
   </style>
 </head>
@@ -302,11 +319,12 @@
   <div class="hero">
 
     <div class="hero-left">
+      <img class="hero-logo" src="assets/mat-logo.png" alt="Mid-Atlantic Tractor - Heavy Iron Specialist">
       <div class="section-label">Live at the conference</div>
 
       <h1 class="headline">
         Stop managing<br>downtime.
-        <span>Start preventing it.</span>
+        <span>Start <br class="mobile-break">preventing it.</span>
       </h1>
 
       <p class="subhead">
