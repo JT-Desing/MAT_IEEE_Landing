@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mid-Atlantic Tractor — IEEE Cement Conference 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: #0D1117;
+      color: #F0F4F6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .top-bar {
+      background: #E86A1A;
+      padding: 8px 24px;
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #0D1117;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      min-height: calc(100vh - 36px);
+      align-items: stretch;
+    }
+
+    .hero-left {
+      padding: 60px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid #1e2530;
+      position: relative;
+    }
+
+    .hero-left::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent, transparent 48px,
+        rgba(232,106,26,0.04) 48px,
+        rgba(232,106,26,0.04) 49px
+      );
+      pointer-events: none;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #E86A1A;
+      margin-bottom: 24px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 20px; height: 2px;
+      background: #E86A1A;
+      flex-shrink: 0;
+    }
+
+    .headline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(44px, 5.5vw, 72px);
+      font-weight: 900;
+      line-height: 0.95;
+      text-transform: uppercase;
+      color: #F0F4F6;
+      margin-bottom: 22px;
+      letter-spacing: 0.02em;
+    }
+
+    .headline span { color: #E86A1A; display: block; }
+
+    .subhead {
+      font-size: 15px;
+      color: #8A9BA8;
+      line-height: 1.75;
+      max-width: 460px;
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid #1e2a38;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #8A9BA8;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    }
+
+    .pill-dot {
+      width: 5px; height: 5px;
+      background: #E86A1A;
+      flex-shrink: 0;
+    }
+
+    .brand-footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-footer-line { width: 20px; height: 2px; background: #E86A1A; }
+
+    .brand-footer-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #3D4F5C;
+    }
+
+    .hero-right {
+      background: #0a0e13;
+      padding: 52px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-left: 1px solid #1e2530;
+    }
+
+    .form-label-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #E86A1A;
+      margin-bottom: 10px;
+    }
+
+    .form-label-top::before {
+      content: '';
+      display: block;
+      width: 20px; height: 2px;
+      background: #E86A1A;
+    }
+
+    .form-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #F0F4F6;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .form-sub {
+      font-size: 13px;
+      color: #3D4F5C;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-group label {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #3D4F5C;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      background: #0D1117;
+      border: 1px solid #1e2a38;
+      padding: 10px 13px;
+      font-size: 13px;
+      color: #F0F4F6;
+      font-family: 'Barlow', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+      clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    }
+
+    .form-group input::placeholder { color: #1e2a38; }
+
+    .form-group input:focus,
+    .form-group select:focus { border-color: #E86A1A; }
+
+    .form-group select option { background: #0D1117; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 18px;
+      background: #E86A1A;
+      color: #0D1117;
+      border: none;
+      padding: 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    }
+
+    .submit-btn:hover { background: #ff7c2a; }
+    .submit-btn:active { transform: scale(0.99); }
+
+    .disclaimer {
+      font-size: 11px;
+      color: #1e2a38;
+      text-align: center;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .success-msg { display: none; text-align: center; padding: 40px 10px; }
+    .success-msg.show { display: block; }
+
+    .success-icon {
+      width: 52px; height: 52px;
+      background: rgba(232,106,26,0.12);
+      border: 2px solid #E86A1A;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+      font-size: 20px;
+      color: #E86A1A;
+    }
+
+    .success-msg h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #F0F4F6;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+
+    .success-msg p { font-size: 13px; color: #3D4F5C; line-height: 1.7; }
+
+    @media (max-width: 780px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 40px 24px; border-right: none; border-bottom: 1px solid #1e2530; }
+      .hero-right { padding: 40px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .headline { font-size: 52px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">IEEE-IAS ACA Cement Conference 2026 &nbsp;·&nbsp; April 27-30 &nbsp;·&nbsp; Fort Lauderdale, FL</div>
+
+  <div class="hero">
+
+    <div class="hero-left">
+      <div class="section-label">Live at the conference</div>
+
+      <h1 class="headline">
+        Stop managing<br>downtime.
+        <span>Start preventing it.</span>
+      </h1>
+
+      <p class="subhead">
+        We're at the IEEE Cement Conference and we want to talk about your hydraulic systems before the next emergency happens.
+      </p>
+
+      <div class="pills">
+        <div class="pill"><span class="pill-dot"></span>Turn-key hydraulic systems</div>
+        <div class="pill"><span class="pill-dot"></span>On-site fabrication and repair</div>
+        <div class="pill"><span class="pill-dot"></span>HPU design and rental</div>
+        <div class="pill"><span class="pill-dot"></span>80-ton lowboy transport</div>
+        <div class="pill"><span class="pill-dot"></span>Custom tube bending and fab</div>
+        <div class="pill"><span class="pill-dot"></span>MSHA / OSHA certified crew</div>
+      </div>
+
+      <div class="brand-footer">
+        <div class="brand-footer-line"></div>
+        <div class="brand-footer-text">Mid-Atlantic Tractor &nbsp;·&nbsp; Hagerstown, MD &nbsp;·&nbsp; 301-730-2027</div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div id="form-wrap">
+        <div class="form-label-top">Get a free quote</div>
+        <p class="form-title">Tell us about your operation</p>
+        <p class="form-sub">Fill this out and our team will reach out within 24 hours with a tailored proposal.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>First name</label>
+            <input type="text" placeholder="John" id="fname">
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input type="text" placeholder="Smith" id="lname">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Work email</label>
+          <input type="email" placeholder="john@company.com" id="email">
+        </div>
+
+        <div class="form-group">
+          <label>Phone number</label>
+          <input type="tel" placeholder="+1 (555) 000-0000" id="phone">
+        </div>
+
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" placeholder="Company name" id="company">
+        </div>
+
+        <div class="form-group">
+          <label>Job title</label>
+          <input type="text" placeholder="Plant Manager" id="jobtitle">
+        </div>
+
+        <div class="form-group">
+          <label>Industry</label>
+          <select id="industry">
+            <option value="" disabled selected>Select your industry</option>
+            <option>Cement and Aggregate</option>
+            <option>Mining</option>
+            <option>Steel and Metals</option>
+            <option>Port and Marine</option>
+            <option>Chemical and Petrochemical</option>
+            <option>Food and Beverage Manufacturing</option>
+            <option>Power Generation</option>
+            <option>Construction</option>
+            <option>Other heavy industry</option>
+          </select>
+        </div>
+
+        <button class="submit-btn" onclick="submitForm()">Request my free quote</button>
+        <p class="disclaimer">No spam. Your information is only used to prepare your quote and contact you directly.</p>
+      </div>
+
+      <div class="success-msg" id="success">
+        <div class="success-icon">&#10003;</div>
+        <h3>You're all set.</h3>
+        <p>Our team will reach out within 24 hours with a tailored quote for your operation.<br><br>In the meantime, come find us at the Mid-Atlantic Tractor booth.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function submitForm() {
+      const fields = ['fname', 'lname', 'email', 'phone', 'company', 'jobtitle', 'industry'];
+      let valid = true;
+      fields.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (!el.value) {
+          el.style.borderColor = '#E86A1A';
+          valid = false;
+        } else {
+          el.style.borderColor = '#1e2a38';
+        }
+      });
+      if (!valid) return;
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('success').classList.add('show');
+    }
+  </script>
+
+</body>
+</html>
