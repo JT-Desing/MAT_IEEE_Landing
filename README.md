@@ -14,3 +14,7 @@ GitHub Pages no ejecuta PHP. Para que el formulario envie correos, sube estos ar
 2. Copia `mail/config.example.php` como `mail/config.php`.
 3. Configura el SMTP y los dos correos destino en `mail/config.php`.
 4. Verifica que `index.html` y la carpeta `mail/` queden en el mismo nivel.
+
+## Base de datos
+
+El formulario actual solo envia notificaciones por correo. Si necesitas guardar los leads en MySQL/MariaDB, usa `database/schema.sql` para crear la base de datos y la tabla.
