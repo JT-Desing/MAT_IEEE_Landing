@@ -5,11 +5,29 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 header('Content-Type: application/json; charset=utf-8');
+$requestId = 'mat_' . uniqid();
+try {
+    $requestId = 'mat_' . bin2hex(random_bytes(6));
+} catch (Throwable $ignored) {
+    $requestId = 'mat_' . uniqid();
+}
+
+function respondJson(int $status, array $payload): void
+{
+    http_response_code($status);
+    echo json_encode($payload);
+    exit;
+}
+
+function failJson(int $status, string $message, string $requestId, array $context = []): void
+{
+    $logContext = $context !== [] ? ' | ' . json_encode($context) : '';
+    error_log('[MAT][' . $requestId . '] ' . $message . $logContext);
+    respondJson($status, ['ok' => false, 'message' => $message, 'request_id' => $requestId]);
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['ok' => false, 'message' => 'Method not allowed.']);
-    exit;
+    failJson(405, 'Method not allowed.', $requestId, ['method' => $_SERVER['REQUEST_METHOD'] ?? '']);
 }
 
 $autoloadCandidates = [
@@ -29,15 +47,11 @@ foreach ($autoloadCandidates as $candidate) {
 $configPath = __DIR__ . '/config.php';
 
 if (!$autoloadFound) {
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'PHPMailer autoload.php was not found. Check the vendor path.']);
-    exit;
+    failJson(500, 'PHPMailer autoload.php was not found. Check the vendor path.', $requestId, ['candidates' => $autoloadCandidates]);
 }
 
 if (!file_exists($configPath)) {
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'Mail configuration is missing.']);
-    exit;
+    failJson(500, 'Mail configuration is missing.', $requestId, ['config_path' => $configPath]);
 }
 
 require $autoload;
@@ -85,8 +99,7 @@ function verifyTurnstileToken(string $token, string $secret, string $remoteIp = 
 }
 
 if (field('website') !== '') {
-    echo json_encode(['ok' => true, 'message' => 'Thank you.']);
-    exit;
+    respondJson(200, ['ok' => true, 'message' => 'Thank you.', 'request_id' => $requestId]);
 }
 
 $turnstileConfig = (array)($config['turnstile'] ?? []);
@@ -97,9 +110,7 @@ if ($turnstileEnabled) {
     $remoteIp = trim((string)($_SERVER['REMOTE_ADDR'] ?? ''));
 
     if ($turnstileToken === '' || $turnstileSecret === '' || !verifyTurnstileToken($turnstileToken, $turnstileSecret, $remoteIp)) {
-        http_response_code(422);
-        echo json_encode(['ok' => false, 'message' => 'Please complete the security check.']);
-        exit;
+        failJson(422, 'Please complete the security check.', $requestId);
     }
 }
 
@@ -121,15 +132,11 @@ foreach ($data as $label => $value) {
 }
 
 if ($missing !== []) {
-    http_response_code(422);
-    echo json_encode(['ok' => false, 'message' => 'Please complete all required fields.']);
-    exit;
+    failJson(422, 'Please complete all required fields.', $requestId, ['missing' => $missing]);
 }
 
 if (!filter_var($data['Work email'], FILTER_VALIDATE_EMAIL)) {
-    http_response_code(422);
-    echo json_encode(['ok' => false, 'message' => 'Please enter a valid email address.']);
-    exit;
+    failJson(422, 'Please enter a valid email address.', $requestId);
 }
 
 $dbConfig = (array)($config['db'] ?? []);
@@ -141,9 +148,7 @@ $dbCharset = trim((string)($dbConfig['charset'] ?? 'utf8mb4'));
 $dbCharset = preg_replace('/[^a-zA-Z0-9_]/', '', $dbCharset) ?: 'utf8mb4';
 
 if ($dbHost === '' || $dbName === '' || $dbUser === '') {
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'Database configuration is missing.']);
-    exit;
+    failJson(500, 'Database configuration is missing.', $requestId);
 }
 
 $dsn = sprintf(
@@ -203,10 +208,7 @@ try {
         ':user_agent' => $userAgent !== '' ? $userAgent : null,
     ]);
 } catch (Throwable $error) {
-    error_log('MAT IEEE db error: ' . $error->getMessage());
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'We could not store your request. Please try again.']);
-    exit;
+    failJson(500, 'We could not store your request. Please try again.', $requestId, ['db_error' => $error->getMessage()]);
 }
 
 $rows = '';
@@ -259,9 +261,7 @@ try {
     $mail->AltBody = $plainText;
     $mail->send();
 
-    echo json_encode(['ok' => true, 'message' => 'Request sent.']);
+    respondJson(200, ['ok' => true, 'message' => 'Request sent.', 'request_id' => $requestId]);
 } catch (Throwable $error) {
-    error_log('MAT IEEE mail error: ' . $error->getMessage());
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'We could not send your request. Please try again.']);
+    failJson(500, 'We could not send your request. Please try again.', $requestId, ['mail_error' => $error->getMessage()]);
 }
