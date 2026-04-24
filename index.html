@@ -470,9 +470,15 @@
           body: new FormData(quoteForm),
           headers: { 'Accept': 'application/json' }
         });
-        const result = await response.json();
-        if (!response.ok || !result.ok) {
-          throw new Error(result.message || 'We could not send your request. Please try again.');
+        const responseText = await response.text();
+        let result = null;
+        try {
+          result = responseText ? JSON.parse(responseText) : null;
+        } catch (parseError) {
+          result = null;
+        }
+        if (!response.ok || !result || !result.ok) {
+          throw new Error((result && result.message) ? result.message : 'We could not send your request. Please try again.');
         }
         quoteForm.style.display = 'none';
         document.getElementById('success').classList.add('show');

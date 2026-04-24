@@ -132,6 +132,83 @@ if (!filter_var($data['Work email'], FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+$dbConfig = (array)($config['db'] ?? []);
+$dbHost = trim((string)($dbConfig['host'] ?? ''));
+$dbName = trim((string)($dbConfig['name'] ?? ''));
+$dbUser = trim((string)($dbConfig['user'] ?? ''));
+$dbPass = (string)($dbConfig['pass'] ?? '');
+$dbCharset = trim((string)($dbConfig['charset'] ?? 'utf8mb4'));
+$dbCharset = preg_replace('/[^a-zA-Z0-9_]/', '', $dbCharset) ?: 'utf8mb4';
+
+if ($dbHost === '' || $dbName === '' || $dbUser === '') {
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'message' => 'Database configuration is missing.']);
+    exit;
+}
+
+$dsn = sprintf(
+    'mysql:host=%s;dbname=%s;charset=%s',
+    $dbHost,
+    $dbName,
+    $dbCharset
+);
+
+$remoteIp = trim((string)($_SERVER['REMOTE_ADDR'] ?? ''));
+$remoteIp = strlen($remoteIp) <= 45 ? $remoteIp : '';
+$userAgent = trim((string)($_SERVER['HTTP_USER_AGENT'] ?? ''));
+$userAgent = substr($userAgent, 0, 512);
+
+try {
+    $pdo = new PDO($dsn, $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+
+    $insertLead = $pdo->prepare(
+        'INSERT INTO quote_requests (
+            first_name,
+            last_name,
+            work_email,
+            phone_number,
+            company,
+            job_title,
+            industry,
+            source,
+            ip_address,
+            user_agent
+        ) VALUES (
+            :first_name,
+            :last_name,
+            :work_email,
+            :phone_number,
+            :company,
+            :job_title,
+            :industry,
+            :source,
+            :ip_address,
+            :user_agent
+        )'
+    );
+
+    $insertLead->execute([
+        ':first_name' => $data['First name'],
+        ':last_name' => $data['Last name'],
+        ':work_email' => $data['Work email'],
+        ':phone_number' => $data['Phone number'],
+        ':company' => $data['Company'],
+        ':job_title' => $data['Job title'],
+        ':industry' => $data['Industry'],
+        ':source' => 'MAT IEEE Landing',
+        ':ip_address' => $remoteIp !== '' ? $remoteIp : null,
+        ':user_agent' => $userAgent !== '' ? $userAgent : null,
+    ]);
+} catch (Throwable $error) {
+    error_log('MAT IEEE db error: ' . $error->getMessage());
+    http_response_code(500);
+    echo json_encode(['ok' => false, 'message' => 'We could not store your request. Please try again.']);
+    exit;
+}
+
 $rows = '';
 foreach ($data as $label => $value) {
     $rows .= '<tr>'
