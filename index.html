@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mid-Atlantic Tractor — IEEE Cement Conference 2026</title>
+  <title>Mid-Atlantic Tractor â€” IEEE Cement Conference 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -331,7 +331,7 @@
 </head>
 <body>
 
-  <div class="top-bar">IEEE-IAS ACA Cement Conference 2026 &nbsp;·&nbsp; April 27-30 &nbsp;·&nbsp; Fort Lauderdale, FL</div>
+  <div class="top-bar">IEEE-IAS ACA Cement Conference 2026 &nbsp;Â·&nbsp; April 27-30 &nbsp;Â·&nbsp; Fort Lauderdale, FL</div>
 
   <div class="hero">
 
@@ -359,7 +359,7 @@
 
       <div class="brand-footer">
         <div class="brand-footer-line"></div>
-        <div class="brand-footer-text">Mid-Atlantic Tractor &nbsp;·&nbsp; Hagerstown, MD &nbsp;·&nbsp; 301-730-2027</div>
+        <div class="brand-footer-text">Mid-Atlantic Tractor &nbsp;Â·&nbsp; Hagerstown, MD &nbsp;Â·&nbsp; 301-730-2027</div>
       </div>
     </div>
 
@@ -471,14 +471,20 @@
           headers: { 'Accept': 'application/json' }
         });
         const responseText = await response.text();
+        console.info('[MAT form] response status:', response.status);
+        console.info('[MAT form] raw response:', responseText);
         let result = null;
         try {
           result = responseText ? JSON.parse(responseText) : null;
         } catch (parseError) {
+          console.error('[MAT form] JSON parse error:', parseError);
           result = null;
         }
         if (!response.ok || !result || !result.ok) {
           throw new Error((result && result.message) ? result.message : 'We could not send your request. Please try again.');
+        }
+        if (result.request_id) {
+          console.info('[MAT form] request_id:', result.request_id);
         }
         quoteForm.style.display = 'none';
         document.getElementById('success').classList.add('show');
