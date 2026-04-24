@@ -12,12 +12,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$autoload = __DIR__ . '/../vendor/autoload.php';
+$autoloadCandidates = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../vendor/autoload.php',
+    dirname(__DIR__, 2) . '/vendor/autoload.php',
+];
+$autoload = '';
+$autoloadFound = false;
+foreach ($autoloadCandidates as $candidate) {
+    if (file_exists($candidate)) {
+        $autoload = $candidate;
+        $autoloadFound = true;
+        break;
+    }
+}
 $configPath = __DIR__ . '/config.php';
 
-if (!file_exists($autoload)) {
+if (!$autoloadFound) {
     http_response_code(500);
-    echo json_encode(['ok' => false, 'message' => 'PHPMailer is not installed. Run composer install on the server.']);
+    echo json_encode(['ok' => false, 'message' => 'PHPMailer autoload.php was not found. Check the vendor path.']);
     exit;
 }
 
