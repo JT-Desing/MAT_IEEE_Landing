@@ -1,5 +1,10 @@
 <?php
 return [
+    'turnstile' => [
+        'enabled' => true,
+        'site_key' => '0x4AAAAAAC-wIh9U1gGUso6W',
+        'secret_key' => 'SET_IN_LOCAL_CONFIG_ONLY',
+    ],
     'smtp' => [
         'host' => 'smtp.example.com',
         'username' => 'notifications@example.com',

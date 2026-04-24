@@ -40,9 +40,54 @@ function escape(string $value): string
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+function verifyTurnstileToken(string $token, string $secret, string $remoteIp = ''): bool
+{
+    $payload = http_build_query([
+        'secret' => $secret,
+        'response' => $token,
+        'remoteip' => $remoteIp,
+    ]);
+
+    $options = [
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $payload,
+            'timeout' => 10,
+        ],
+    ];
+
+    $result = @file_get_contents(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        false,
+        stream_context_create($options)
+    );
+
+    if (!is_string($result) || $result === '') {
+        return false;
+    }
+
+    $decoded = json_decode($result, true);
+    return is_array($decoded) && !empty($decoded['success']);
+}
+
 if (field('website') !== '') {
     echo json_encode(['ok' => true, 'message' => 'Thank you.']);
     exit;
+}
+
+$turnstileConfig = (array)($config['turnstile'] ?? []);
+$turnstileEnabled = (bool)($turnstileConfig['enabled'] ?? false);
+if ($turnstileEnabled) {
+    $turnstileToken = field('cf-turnstile-response');
+    $turnstileSecret = trim((string)($turnstileConfig['secret_key'] ?? ''));
+    $remoteIp = trim((string)($_SERVER['REMOTE_ADDR'] ?? ''));
+
+    if ($turnstileToken === '' || $turnstileSecret === '' || !verifyTurnstileToken($turnstileToken, $turnstileSecret, $remoteIp)) {
+        http_response_code(422);
+        echo json_encode(['ok' => false, 'message' => 'Please complete the security check.']);
+        exit;
+    }
 }
 
 $data = [

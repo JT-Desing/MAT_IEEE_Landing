@@ -13,7 +13,8 @@ GitHub Pages no ejecuta PHP. Para que el formulario envie correos, sube estos ar
 1. Ejecuta `composer install` en el servidor o en el proyecto antes de subirlo.
 2. Copia `mail/config.example.php` como `mail/config.php`.
 3. Configura el SMTP y los dos correos destino en `mail/config.php`.
-4. Verifica que `index.html` y la carpeta `mail/` queden en el mismo nivel.
+4. Configura `turnstile.site_key` y `turnstile.secret_key` en `mail/config.php`.
+5. Verifica que `index.html` y la carpeta `mail/` queden en el mismo nivel.
 
 ## Base de datos
 
